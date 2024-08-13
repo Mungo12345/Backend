@@ -8,37 +8,37 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 
 
-
-app.get("/getOwners",(req,res)=>{
-    owners.find()
+//Display
+app.get("/getOwners", async(req,res)=>{
+    await owners.find()
     .then(users => res.json(users))
     .catch(err => res.json(err))
 
 })
-app.get("/getOwner/:id",(req,res)=>{
+app.get("/getOwner/:id",async(req,res)=>{
     const {id} = req.params
-    owners.findOne({_id: id})
+    await owners.findOne({_id: id})
     .then(users => res.json(users))
     .catch(err => res.json(err))
 
 })
 
 
-app.get("/getLandHoldings",(req,res)=>{
-    landholding.find()
+app.get("/getLandHoldings",async(req,res)=>{
+    await landholding.find()
     .then(landhold => res.json(landhold))
     .catch(err => res.json(err))
 
 })
 
-app.get("/getLandHolding/:id",(req,res)=>{
+app.get("/getLandHolding/:id",async(req,res)=>{
     const {id} = req.params
-    landholding.findOne({_id: id})
+    await landholding.findOne({_id: id})
     .then(users => res.json(users))
     .catch(err => res.json(err))
 
 })
-
+//Edit
 app.put("/updateOwner/:id", async(req,res) =>{
     const{id,...rest} = req.body.values
     await landholding.updateMany({ownerID:id}, [{$set:{ownerID:id,ownerFrom:rest.ownerName}}])
@@ -69,7 +69,7 @@ app.put("/updateLandHolding/:id", async(req,res) =>{
     const data = await landholding.updateOne({_id : id}, rest)
     res.send({success : true, message : "data update successful", data : data})
 })
-
+//Delete
 app.delete("/deleteOwner/:id",async(req,res) =>{
     const id = req.params.id
     console.log(id)
@@ -85,7 +85,7 @@ app.delete("/deleteLandHolding/:id",async(req,res) =>{
     const data = await landholding.deleteOne({_id : id})
     res.send({success : true, message : "data deleted successfully", data : data})
 })
-
+//Login
 app.post("/",async(req,res)=>{
     const{email,password}=req.body
 
@@ -107,7 +107,7 @@ app.post("/",async(req,res)=>{
 })
 
 
-
+//Sign In
 app.post("/signIn",async(req,res)=>{
     const{email,password}=req.body
 
@@ -133,7 +133,7 @@ app.post("/signIn",async(req,res)=>{
     }
 
 })
-
+//Add
 app.post("/Add", async(req,res)=>{
     const{ownerName,entityType,ownerType,address}=req.body
     const totalLand = 0
@@ -197,8 +197,6 @@ app.post("/AddLand", async(req,res)=>{
     }
 
 })
-
-
 
 app.listen(3000,()=>{
     console.log("port connected");
