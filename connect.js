@@ -1,12 +1,19 @@
 const express = require("express")
 const path = require("path")
+const bodyParser = require('body-parser');
+const crypto = require('crypto');
+const mongoose = require('mongoose');
+const multer = require('multer');
+const {GridFsStorage} = require('multer-gridfs-storage');
+const Grid = require('gridfs-stream');
+const methodOverride = require('method-override');
 const {collection, owners, landholding} = require("./src/services/db")
 const cors = require("cors")
 const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors())
-
+app.use(express.static('public'));
 
 //Display
 app.get("/getOwners", async(req,res)=>{
@@ -195,6 +202,42 @@ app.post("/AddLand", async(req,res)=>{
     catch(e){
         res.json("fail")
     }
+
+})
+//FileUpload
+// Middleware
+app.use(bodyParser.json());
+app.use(methodOverride('_method'));
+app.set('view engine', 'ejs');
+
+// Mongo URI
+const mongoURI = 'mongodb+srv://Admin:HelloWorld@holdings.sqfultd.mongodb.net/?retryWrites=true&w=majority&appName=Holdings';
+
+// Create mongo connection
+const conn = mongoose.createConnection(mongoURI);
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'public')
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + "_" + Date.now() + path.extname(file.originalname));
+  }
+})
+const upload = multer({
+  storage:storage
+})
+
+app.post('/uploadOwnerFile/:id', upload.single('image') ,async(req,res) => {
+  const id = req.params.id
+  const image = req.file.filename
+  await owners.updateOne({_id:id}, [{$set:{fileName:image}}])
+
+})
+app.post('/uploadLandFile/:id', upload.single('image') ,async(req,res) => {
+  const id = req.params.id
+  const image = req.file.filename
+  await landholding.updateOne({_id:id}, [{$set:{fileName:image}}])
 
 })
 

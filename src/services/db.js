@@ -40,6 +40,10 @@ const Owners=new mongoose.Schema({
         type:Number,
         required:true
 
+    },
+    fileName:{
+        type:String,
+        required:false
     }
 })
 
@@ -87,6 +91,10 @@ const landHolding =new mongoose.Schema({
     titleSource:{
         type:String,
         required:true
+    },
+    fileName:{
+        type:String,
+        required:false
     }
 })
 
